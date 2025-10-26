@@ -1,4 +1,4 @@
-// Copyright (c) 2010 Satoshi Nakamoto
+// Copyright (c) 2012 Satoshi Nakamoto
 // Copyright (c) 2009-2020 The Bitcoin Core developers
 // Copyright (c) 2025 The Mytherra Core developers
 // Distributed under the MIT software license, see the accompanying
@@ -101,7 +101,25 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].min_activation_height = 0; 
 
-        consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000000000000100010");
+        // Placeholder for versionbit 14
+        consensus.vDeployments[Consensus::DEPLOYMENT_UNKNOWN14].bit = 14;
+        consensus.vDeployments[Consensus::DEPLOYMENT_UNKNOWN14].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_UNKNOWN14].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+        consensus.vDeployments[Consensus::DEPLOYMENT_UNKNOWN14].min_activation_height = 0;
+
+        // Placeholder for versionbit 23
+        consensus.vDeployments[Consensus::DEPLOYMENT_UNKNOWN23].bit = 23;
+        consensus.vDeployments[Consensus::DEPLOYMENT_UNKNOWN23].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_UNKNOWN23].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+        consensus.vDeployments[Consensus::DEPLOYMENT_UNKNOWN23].min_activation_height = 0;
+
+        // Placeholder for versionbit 26
+        consensus.vDeployments[Consensus::DEPLOYMENT_UNKNOWN26].bit = 26;
+        consensus.vDeployments[Consensus::DEPLOYMENT_UNKNOWN26].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_UNKNOWN26].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+        consensus.vDeployments[Consensus::DEPLOYMENT_UNKNOWN26].min_activation_height = 0;
+
+        consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000020ca58a376edd8d9218");
         consensus.defaultAssumeValid = uint256S("0x00000fb7201bbe5db3dbabe46a1028836f8143c8fcea62c59dc5379e2f5b8309"); 
 
         /**
@@ -153,6 +171,7 @@ public:
         // service bits we want, but we should get them updated to support all service bits wanted by any
         // release ASAP to avoid it where possible.
         vSeeds.emplace_back("217.154.114.75");
+        vSeeds.emplace_back("192.168.188.67");
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,1);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,0);
@@ -170,7 +189,18 @@ public:
 
         checkpointData = {
             {
-                { 0, uint256S("0x00000fb7201bbe5db3dbabe46a1028836f8143c8fcea62c59dc5379e2f5b8309")},
+                {     0, uint256S("0x00000fb7201bbe5db3dbabe46a1028836f8143c8fcea62c59dc5379e2f5b8309")},
+                {  2000, uint256S("0x00000000000000d5ee802ac451cf0c86f5ff2afefc7902fea2c2fe5d264a3488")},
+                {  4000, uint256S("0x0000000000000009c4fc90ef0ed2aa3a866669b3c7f2ad3faa92de916b978eb7")},
+                {  6000, uint256S("0x000000000000000b7cd6ac819bbd9ea528f98b651f4c49ab7b413612c82c49af")},
+                {  8000, uint256S("0x0000000000000027909740e67f4acb5aaa8198db36855c88f486b50590b4b51e")},
+                { 10000, uint256S("0x00000000000000269f0ce7776d82b07a2e91dfd963614bdbfae26f4a0b6b6d0d")},
+                { 12000, uint256S("0x0000000000000000bafae1bfd0963fe156fabef5335396c501a45d43c7f30cb0")},
+                { 14000, uint256S("0x0000000000000015906d7c3cad96a59e24dffc2c3f34b28099c0d5a5fe580f07")},
+                { 16000, uint256S("0x000000000000000e5f9fe7ec07d0d48c2f9c4383d819b831e21f596b8fc16182")},
+                { 18000, uint256S("0x000000000000005d2d5f13b907f6ca9aa5184711099ad1a1a7e15b91232abfe6")},
+                { 20000, uint256S("0x000000000000000cf973d227186992b0225aaa5f2d4b1e9557737bd3ea8686e9")},
+                { 22000, uint256S("0x000000000000000587f3d5a674c70eb4fc8d5888eea2305ea65a238b65ba7e16")},
             }
         };
 
