@@ -6,6 +6,7 @@
 #ifndef MYTHERRA_NODE_INTERFACE_UI_H
 #define MYTHERRA_NODE_INTERFACE_UI_H
 
+#include <cstdint>
 #include <functional>
 #include <memory>
 #include <string>

@@ -10,18 +10,78 @@
 #include <primitives/block.h>
 #include <uint256.h>
 
+#include <algorithm>
+
+namespace {
+constexpr int64_t LWMA_AVERAGING_WINDOW = 60;
+}
+
+unsigned int CalculateNextWorkRequiredLWMA(const CBlockIndex* pindexLast, const Consensus::Params& params)
+{
+    assert(pindexLast != nullptr);
+    if (params.fPowNoRetargeting || pindexLast->nHeight < LWMA_AVERAGING_WINDOW) {
+        return pindexLast->nBits;
+    }
+
+    const arith_uint256 pow_limit = UintToArith256(params.powLimit);
+    const int64_t max_solvetime = 6 * params.nPowTargetSpacing;
+    int64_t weighted_solvetime = 0;
+    arith_uint256 average_target;
+    uint32_t target_remainder = 0;
+    const CBlockIndex* current = pindexLast;
+
+    for (int64_t weight = LWMA_AVERAGING_WINDOW; weight >= 1; --weight) {
+        assert(current != nullptr && current->pprev != nullptr);
+        const int64_t solvetime = std::clamp(current->GetBlockTime() - current->pprev->GetBlockTime(), int64_t{1}, max_solvetime);
+        weighted_solvetime += weight * solvetime;
+
+        arith_uint256 target;
+        target.SetCompact(current->nBits);
+        if (target > pow_limit) target = pow_limit;
+        const arith_uint256 target_quotient = target / arith_uint256{static_cast<uint64_t>(LWMA_AVERAGING_WINDOW)};
+        average_target += target_quotient;
+        target_remainder += (target - target_quotient * static_cast<uint32_t>(LWMA_AVERAGING_WINDOW)).GetLow64();
+        current = current->pprev;
+    }
+    average_target += target_remainder / LWMA_AVERAGING_WINDOW;
+
+    const uint32_t denominator = static_cast<uint32_t>(LWMA_AVERAGING_WINDOW * (LWMA_AVERAGING_WINDOW + 1) * params.nPowTargetSpacing / 2);
+    const arith_uint256 divisor{denominator};
+    const arith_uint256 weighted{static_cast<uint64_t>(weighted_solvetime)};
+    const arith_uint256 average_quotient = average_target / divisor;
+    const arith_uint256 average_remainder = average_target - average_quotient * denominator;
+
+    if (average_quotient != 0 && average_quotient > pow_limit / weighted) {
+        return pow_limit.GetCompact();
+    }
+
+    const arith_uint256 base = average_quotient * static_cast<uint32_t>(weighted_solvetime);
+    const arith_uint256 correction = (average_remainder * static_cast<uint32_t>(weighted_solvetime)) / divisor;
+    if (correction > pow_limit - base) {
+        return pow_limit.GetCompact();
+    }
+    const arith_uint256 next_target = base + correction;
+    if (next_target == 0) return arith_uint256{1}.GetCompact();
+    return next_target.GetCompact();
+}
+
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const Consensus::Params& params)
 {
     assert(pindexLast != nullptr);
+    const int64_t next_height = static_cast<int64_t>(pindexLast->nHeight) + 1;
+    if (next_height >= params.LWMAHeight) {
+        return CalculateNextWorkRequiredLWMA(pindexLast, params);
+    }
+
     unsigned int nProofOfWorkLimit = UintToArith256(params.powLimit).GetCompact();
 
     // Only change once per difficulty adjustment interval
-    if ((pindexLast->nHeight+1) % params.DifficultyAdjustmentInterval() != 0)
+    if (next_height % params.DifficultyAdjustmentInterval() != 0)
     {
         if (params.fPowAllowMinDifficultyBlocks)
         {
             // Special difficulty rule for testnet:
-            // If the new block's timestamp is more than 2* 10 minutes
+            // If the new block's timestamp is more than twice the target spacing
             // then allow mining of a min-difficulty block.
             if (pblock->GetBlockTime() > pindexLast->GetBlockTime() + params.nPowTargetSpacing*2)
                 return nProofOfWorkLimit;
@@ -37,7 +97,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
         return pindexLast->nBits;
     }
 
-    // Go back by what we want to be 14 days worth of blocks
+    // Go back by one difficulty adjustment interval
     int nHeightFirst = pindexLast->nHeight - (params.DifficultyAdjustmentInterval()-1);
     assert(nHeightFirst >= 0);
     const CBlockIndex* pindexFirst = pindexLast->GetAncestor(nHeightFirst);
@@ -71,11 +131,12 @@ unsigned int CalculateNextWorkRequired(const CBlockIndex* pindexLast, int64_t nF
     return bnNew.GetCompact();
 }
 
-// Check that on difficulty adjustments, the new difficulty does not increase
-// or decrease beyond the permitted limits.
+// Before LWMA activation, check that difficulty adjustments stay within the
+// permitted limits. LWMA transitions are verified against full block history
+// during block validation instead.
 bool PermittedDifficultyTransition(const Consensus::Params& params, int64_t height, uint32_t old_nbits, uint32_t new_nbits)
 {
-    if (params.fPowAllowMinDifficultyBlocks) return true;
+    if (height >= params.LWMAHeight || params.fPowAllowMinDifficultyBlocks) return true;
 
     if (height % params.DifficultyAdjustmentInterval() == 0) {
         int64_t smallest_timespan = params.nPowTargetTimespan/4;

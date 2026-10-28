@@ -31,10 +31,23 @@ constexpr bool ValidDeployment(BuriedDeployment dep) { return dep <= DEPLOYMENT_
 
 enum DeploymentPos : uint16_t {
     DEPLOYMENT_TESTDUMMY,
-    DEPLOYMENT_TAPROOT,
-    DEPLOYMENT_UNKNOWN14,
-    DEPLOYMENT_UNKNOWN23,
-    DEPLOYMENT_UNKNOWN26,// Deployment of Schnorr/Taproot (BIPs 340-342)
+    DEPLOYMENT_TAPROOT,        // Deployment of Schnorr/Taproot (BIPs 340-342)
+    // Bits 13-26: reserved to suppress accidental activation from ASIC version-rolling
+    // (zpool.ca, letsmine.it, NitroPool, koinium.com roll these bits ~28-42% of blocks)
+    DEPLOYMENT_RESERVED_BIT13,
+    DEPLOYMENT_RESERVED_BIT14,
+    DEPLOYMENT_RESERVED_BIT15,
+    DEPLOYMENT_RESERVED_BIT16,
+    DEPLOYMENT_RESERVED_BIT17,
+    DEPLOYMENT_RESERVED_BIT18,
+    DEPLOYMENT_RESERVED_BIT19,
+    DEPLOYMENT_RESERVED_BIT20,
+    DEPLOYMENT_RESERVED_BIT21,
+    DEPLOYMENT_RESERVED_BIT22,
+    DEPLOYMENT_RESERVED_BIT23,
+    DEPLOYMENT_RESERVED_BIT24,
+    DEPLOYMENT_RESERVED_BIT25,
+    DEPLOYMENT_RESERVED_BIT26,
     // NOTE: Also add new deployments to VersionBitsDeploymentInfo in deploymentinfo.cpp
     MAX_VERSION_BITS_DEPLOYMENTS
 };
@@ -114,6 +127,7 @@ struct Params {
     bool fPowNoRetargeting;
     int64_t nPowTargetSpacing;
     int64_t nPowTargetTimespan;
+    int LWMAHeight{std::numeric_limits<int>::max()};
     std::chrono::seconds PowTargetSpacing() const
     {
         return std::chrono::seconds{nPowTargetSpacing};

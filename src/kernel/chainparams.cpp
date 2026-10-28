@@ -1,4 +1,4 @@
-// Copyright (c) 2012 Satoshi Nakamoto
+// Copyright (c) 2010 Satoshi Nakamoto
 // Copyright (c) 2009-2020 The Bitcoin Core developers
 // Copyright (c) 2025 The Mytherra Core developers
 // Distributed under the MIT software license, see the accompanying
@@ -88,39 +88,81 @@ public:
         consensus.nPowTargetSpacing = 5 * 60;
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.fPowNoRetargeting = false;
-        consensus.nRuleChangeActivationThreshold = 11; // 90% of 12
-        consensus.nMinerConfirmationWindow = 12; // nPowTargetTimespan / nPowTargetSpacing
+        consensus.LWMAHeight = 60381; // Mainnet tip 58381 + 2000 blocks
+        consensus.nRuleChangeActivationThreshold = 1815; // 90% of 2016
+        consensus.nMinerConfirmationWindow = 2016; // ~1 week at 5min blocks (prevents accidental versionbit activation)
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
-        consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].min_activation_height = 0; // No activation delay
+        consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].min_activation_height = 0;
 
         // Deployment of Taproot (BIPs 340-342)
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].bit = 2;
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].nStartTime = Consensus::BIP9Deployment::ALWAYS_ACTIVE;
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
-        consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].min_activation_height = 0; 
+        consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].min_activation_height = 0;
 
-        // Placeholder for versionbit 14
-        consensus.vDeployments[Consensus::DEPLOYMENT_UNKNOWN14].bit = 14;
-        consensus.vDeployments[Consensus::DEPLOYMENT_UNKNOWN14].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
-        consensus.vDeployments[Consensus::DEPLOYMENT_UNKNOWN14].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
-        consensus.vDeployments[Consensus::DEPLOYMENT_UNKNOWN14].min_activation_height = 0;
+        // Reserved bits 13-26: NEVER_ACTIVE to suppress warnings from ASIC version-rolling
+        // (zpool.ca, letsmine.it, NitroPool, koinium.com roll these bits 28-42% of blocks)
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT13].bit = 13;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT13].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT13].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT13].min_activation_height = 0;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT14].bit = 14;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT14].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT14].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT14].min_activation_height = 0;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT15].bit = 15;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT15].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT15].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT15].min_activation_height = 0;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT16].bit = 16;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT16].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT16].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT16].min_activation_height = 0;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT17].bit = 17;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT17].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT17].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT17].min_activation_height = 0;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT18].bit = 18;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT18].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT18].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT18].min_activation_height = 0;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT19].bit = 19;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT19].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT19].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT19].min_activation_height = 0;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT20].bit = 20;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT20].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT20].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT20].min_activation_height = 0;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT21].bit = 21;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT21].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT21].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT21].min_activation_height = 0;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT22].bit = 22;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT22].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT22].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT22].min_activation_height = 0;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT23].bit = 23;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT23].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT23].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT23].min_activation_height = 0;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT24].bit = 24;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT24].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT24].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT24].min_activation_height = 0;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT25].bit = 25;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT25].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT25].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT25].min_activation_height = 0;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT26].bit = 26;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT26].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT26].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RESERVED_BIT26].min_activation_height = 0;
 
-        // Placeholder for versionbit 23
-        consensus.vDeployments[Consensus::DEPLOYMENT_UNKNOWN23].bit = 23;
-        consensus.vDeployments[Consensus::DEPLOYMENT_UNKNOWN23].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
-        consensus.vDeployments[Consensus::DEPLOYMENT_UNKNOWN23].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
-        consensus.vDeployments[Consensus::DEPLOYMENT_UNKNOWN23].min_activation_height = 0;
-
-        // Placeholder for versionbit 26
-        consensus.vDeployments[Consensus::DEPLOYMENT_UNKNOWN26].bit = 26;
-        consensus.vDeployments[Consensus::DEPLOYMENT_UNKNOWN26].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
-        consensus.vDeployments[Consensus::DEPLOYMENT_UNKNOWN26].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
-        consensus.vDeployments[Consensus::DEPLOYMENT_UNKNOWN26].min_activation_height = 0;
-
-        consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000020ca58a376edd8d9218");
-        consensus.defaultAssumeValid = uint256S("0x00000fb7201bbe5db3dbabe46a1028836f8143c8fcea62c59dc5379e2f5b8309"); 
+        consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000006ca56a6c4e949c077c5");
+        consensus.defaultAssumeValid = uint256S("0x0000000000000013c1fe19b348889542ff5ba7168c89e5081ff5ec9e50b8bf5d"); // block 40892
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
@@ -171,7 +213,6 @@ public:
         // service bits we want, but we should get them updated to support all service bits wanted by any
         // release ASAP to avoid it where possible.
         vSeeds.emplace_back("217.154.114.75");
-        vSeeds.emplace_back("192.168.188.67");
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,1);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,0);
@@ -190,17 +231,7 @@ public:
         checkpointData = {
             {
                 {     0, uint256S("0x00000fb7201bbe5db3dbabe46a1028836f8143c8fcea62c59dc5379e2f5b8309")},
-                {  2000, uint256S("0x00000000000000d5ee802ac451cf0c86f5ff2afefc7902fea2c2fe5d264a3488")},
-                {  4000, uint256S("0x0000000000000009c4fc90ef0ed2aa3a866669b3c7f2ad3faa92de916b978eb7")},
-                {  6000, uint256S("0x000000000000000b7cd6ac819bbd9ea528f98b651f4c49ab7b413612c82c49af")},
-                {  8000, uint256S("0x0000000000000027909740e67f4acb5aaa8198db36855c88f486b50590b4b51e")},
-                { 10000, uint256S("0x00000000000000269f0ce7776d82b07a2e91dfd963614bdbfae26f4a0b6b6d0d")},
-                { 12000, uint256S("0x0000000000000000bafae1bfd0963fe156fabef5335396c501a45d43c7f30cb0")},
-                { 14000, uint256S("0x0000000000000015906d7c3cad96a59e24dffc2c3f34b28099c0d5a5fe580f07")},
-                { 16000, uint256S("0x000000000000000e5f9fe7ec07d0d48c2f9c4383d819b831e21f596b8fc16182")},
-                { 18000, uint256S("0x000000000000005d2d5f13b907f6ca9aa5184711099ad1a1a7e15b91232abfe6")},
-                { 20000, uint256S("0x000000000000000cf973d227186992b0225aaa5f2d4b1e9557737bd3ea8686e9")},
-                { 22000, uint256S("0x000000000000000587f3d5a674c70eb4fc8d5888eea2305ea65a238b65ba7e16")},
+                { 40892, uint256S("0x0000000000000013c1fe19b348889542ff5ba7168c89e5081ff5ec9e50b8bf5d")},
             }
         };
 
@@ -209,10 +240,9 @@ public:
         };
 
         chainTxData = ChainTxData{
-            // Data from RPC: getchaintxstats 4096 0000003e57cc2746a59b957a0c23005f20da747c1da747137f7627caf0a5a154
-            .nTime    = 1752832800,
-            .nTxCount = 0,
-            .dTxRate  = 0,
+            .nTime    = 1774423839, // block 40892
+            .nTxCount = 60027,
+            .dTxRate  = 0.5,
         };
     }
 };
@@ -433,6 +463,11 @@ public:
         consensus.nPowTargetSpacing = 5 * 60;
         consensus.fPowAllowMinDifficultyBlocks = true;
         consensus.fPowNoRetargeting = true;
+        if (opts.lwma_activation_height) {
+            consensus.LWMAHeight = *opts.lwma_activation_height;
+            consensus.fPowAllowMinDifficultyBlocks = false;
+            consensus.fPowNoRetargeting = false;
+        }
         consensus.nRuleChangeActivationThreshold = 108; // 75% for testchains
         consensus.nMinerConfirmationWindow = 144; // Faster than normal for regtest (144 instead of 2016)
 
@@ -485,8 +520,8 @@ public:
         }
 
         genesis = CreateGenesisBlock(1752832800, 1, 0x207fffff, 1, 60 * COIN);
-        consensus.hashGenesisBlock = uint256S("0x20b18b28095c89aa15915ff48a8bcc5f0e5e5c8ad8a10b03e2b4f5fe6f12ee2c");
-        //assert(consensus.hashGenesisBlock == uint256S("0x20b18b28095c89aa15915ff48a8bcc5f0e5e5c8ad8a10b03e2b4f5fe6f12ee2c"));
+        consensus.hashGenesisBlock = uint256S("0x73c01daab6bff0453c80b51dd28b40f2d377aa35515bb3c689910cb225d8dd27");
+        //assert(consensus.hashGenesisBlock == uint256S("0x73c01daab6bff0453c80b51dd28b40f2d377aa35515bb3c689910cb225d8dd27"));
         //assert(genesis.hashMerkleRoot == uint256S("0x66abee8edd7338df85c93d13a577b9acc0f3a90665db232862f1bf4eba7f5ba0"));
 
         vFixedSeeds.clear(); //!< Regtest mode doesn't have any fixed seeds.
@@ -500,7 +535,7 @@ public:
 
         checkpointData = {
             {
-                {0, uint256S("20b18b28095c89aa15915ff48a8bcc5f0e5e5c8ad8a10b03e2b4f5fe6f12ee2c")},
+                {0, uint256S("73c01daab6bff0453c80b51dd28b40f2d377aa35515bb3c689910cb225d8dd27")},
             }
         };
 

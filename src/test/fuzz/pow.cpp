@@ -25,7 +25,8 @@ void initialize_pow()
 FUZZ_TARGET_INIT(pow, initialize_pow)
 {
     FuzzedDataProvider fuzzed_data_provider(buffer.data(), buffer.size());
-    const Consensus::Params& consensus_params = Params().GetConsensus();
+    auto consensus_params = Params().GetConsensus();
+    consensus_params.LWMAHeight = std::numeric_limits<int>::max();
     std::vector<std::unique_ptr<CBlockIndex>> blocks;
     const uint32_t fixed_time = fuzzed_data_provider.ConsumeIntegral<uint32_t>();
     const uint32_t fixed_bits = fuzzed_data_provider.ConsumeIntegral<uint32_t>();
@@ -63,7 +64,7 @@ FUZZ_TARGET_INIT(pow, initialize_pow)
         {
             (void)GetBlockProof(current_block);
             (void)CalculateNextWorkRequired(&current_block, fuzzed_data_provider.ConsumeIntegralInRange<int64_t>(0, std::numeric_limits<int64_t>::max()), consensus_params);
-            if (current_block.nHeight != std::numeric_limits<int>::max() && current_block.nHeight - (consensus_params.DifficultyAdjustmentInterval() - 1) >= 0) {
+            if (current_block.nHeight != std::numeric_limits<int>::max() && current_block.nHeight - (consensus_params.DifficultyAdjustmentInterval() - 1) >= 0 && static_cast<int64_t>(current_block.nHeight) + 1 < consensus_params.LWMAHeight) {
                 (void)GetNextWorkRequired(&current_block, &(*block_header), consensus_params);
             }
         }
@@ -120,4 +121,39 @@ FUZZ_TARGET_INIT(pow_transition, initialize_pow)
     auto last_block{blocks.back().get()};
     unsigned int new_nbits{GetNextWorkRequired(last_block, nullptr, consensus_params)};
     Assert(PermittedDifficultyTransition(consensus_params, last_block->nHeight + 1, last_block->nBits, new_nbits));
+}
+
+FUZZ_TARGET_INIT(pow_lwma, initialize_pow)
+{
+    FuzzedDataProvider fuzzed_data_provider(buffer.data(), buffer.size());
+    auto consensus_params = Params().GetConsensus();
+    consensus_params.LWMAHeight = 0;
+    consensus_params.fPowAllowMinDifficultyBlocks = false;
+    consensus_params.fPowNoRetargeting = false;
+    const arith_uint256 pow_limit = UintToArith256(consensus_params.powLimit);
+    std::vector<std::unique_ptr<CBlockIndex>> blocks;
+
+    for (int height = 0; height <= 60; ++height) {
+        CBlockHeader header;
+        header.nTime = fuzzed_data_provider.ConsumeIntegral<uint32_t>();
+        const uint32_t nbits = fuzzed_data_provider.ConsumeIntegral<uint32_t>();
+        bool negative;
+        bool overflow;
+        arith_uint256 target;
+        target.SetCompact(nbits, &negative, &overflow);
+        header.nBits = negative || overflow || target == 0 || target > pow_limit ? pow_limit.GetCompact() : target.GetCompact();
+
+        auto current_block{std::make_unique<CBlockIndex>(header)};
+        current_block->nHeight = height;
+        current_block->pprev = blocks.empty() ? nullptr : blocks.back().get();
+        blocks.emplace_back(std::move(current_block));
+    }
+
+    const uint32_t new_nbits = CalculateNextWorkRequiredLWMA(blocks.back().get(), consensus_params);
+    Assert(new_nbits == GetNextWorkRequired(blocks.back().get(), nullptr, consensus_params));
+    bool negative;
+    bool overflow;
+    arith_uint256 new_target;
+    new_target.SetCompact(new_nbits, &negative, &overflow);
+    Assert(!negative && !overflow && new_target != 0 && new_target <= pow_limit);
 }

@@ -5,6 +5,7 @@
 #ifndef MYTHERRA_CHAINPARAMSBASE_H
 #define MYTHERRA_CHAINPARAMSBASE_H
 
+#include <cstdint>
 #include <memory>
 #include <string>
 

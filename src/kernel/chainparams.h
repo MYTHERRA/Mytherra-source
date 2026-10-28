@@ -153,6 +153,7 @@ public:
     struct RegTestOptions {
         std::unordered_map<Consensus::DeploymentPos, VersionBitsParameters> version_bits_parameters{};
         std::unordered_map<Consensus::BuriedDeployment, int> activation_heights{};
+        std::optional<int> lwma_activation_height{};
         bool fastprune{false};
     };
 

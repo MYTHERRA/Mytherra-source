@@ -70,9 +70,8 @@ Comment: Modifications of Stephen Hutchings' Typicons
 Files: src/qt/res/icons/mytherra.*
        share/pixmaps/mytherra*
        src/qt/res/src/mytherra.svg
-Copyright: Bitboy, Jonas Schnelli
-License: public-domain
-Comment: Site: https://mytherratalk.org/?topic=1756.0
+Copyright: The Mytherra project
+License: Expat
 
 Files: src/qt/res/icons/proxy.png
        src/qt/res/src/proxy.svg

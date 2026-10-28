@@ -18,16 +18,60 @@ const struct VBDeploymentInfo VersionBitsDeploymentInfo[Consensus::MAX_VERSION_B
         /*.gbt_force =*/ true,
     },
     {
-        /*.name =*/ "unknown14",
-        /*.gbt_force =*/ true,
+        /*.name =*/ "reserved_bit13",
+        /*.gbt_force =*/ false,
     },
     {
-        /*.name =*/ "unknown23",
-        /*.gbt_force =*/ true,
+        /*.name =*/ "reserved_bit14",
+        /*.gbt_force =*/ false,
     },
     {
-        /*.name =*/ "unknown26",
-        /*.gbt_force =*/ true,
+        /*.name =*/ "reserved_bit15",
+        /*.gbt_force =*/ false,
+    },
+    {
+        /*.name =*/ "reserved_bit16",
+        /*.gbt_force =*/ false,
+    },
+    {
+        /*.name =*/ "reserved_bit17",
+        /*.gbt_force =*/ false,
+    },
+    {
+        /*.name =*/ "reserved_bit18",
+        /*.gbt_force =*/ false,
+    },
+    {
+        /*.name =*/ "reserved_bit19",
+        /*.gbt_force =*/ false,
+    },
+    {
+        /*.name =*/ "reserved_bit20",
+        /*.gbt_force =*/ false,
+    },
+    {
+        /*.name =*/ "reserved_bit21",
+        /*.gbt_force =*/ false,
+    },
+    {
+        /*.name =*/ "reserved_bit22",
+        /*.gbt_force =*/ false,
+    },
+    {
+        /*.name =*/ "reserved_bit23",
+        /*.gbt_force =*/ false,
+    },
+    {
+        /*.name =*/ "reserved_bit24",
+        /*.gbt_force =*/ false,
+    },
+    {
+        /*.name =*/ "reserved_bit25",
+        /*.gbt_force =*/ false,
+    },
+    {
+        /*.name =*/ "reserved_bit26",
+        /*.gbt_force =*/ false,
     },
 };
 
