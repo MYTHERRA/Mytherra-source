@@ -136,6 +136,33 @@ BOOST_AUTO_TEST_CASE(lwma_weighted_window_vector)
     BOOST_CHECK_EQUAL(CalculateNextWorkRequiredLWMA(&blocks.back(), consensus), 0x1d02ddc9U);
 }
 
+// Regression test for the timestamp attack fixed in 25.2.1: alternating
+// forward-dated and back-dated timestamps must not lower difficulty compared
+// to an honest chain with the same real block rate.
+BOOST_AUTO_TEST_CASE(lwma_alternating_timestamp_attack)
+{
+    auto consensus = CreateChainParams(*m_node.args, CBaseChainParams::MAIN)->GetConsensus();
+    auto honest = BuildLWMAChain(61, 300);
+    auto attacked = BuildLWMAChain(61, 300);
+    for (int i = 1; i < 61; ++i) {
+        const uint32_t real_time = honest[i].nTime;
+        // Odd blocks claim +10 min (MAX_FUTURE_BLOCK_TIME), even blocks fall back.
+        attacked[i].nTime = (i % 2 == 1) ? real_time + 600 : real_time - 299;
+    }
+    arith_uint256 honest_target, attacked_target;
+    honest_target.SetCompact(CalculateNextWorkRequiredLWMA(&honest.back(), consensus));
+    attacked_target.SetCompact(CalculateNextWorkRequiredLWMA(&attacked.back(), consensus));
+    // Easier target == larger value. The attack may not make mining meaningfully easier.
+    BOOST_CHECK(attacked_target <= honest_target * 105 / 100);
+
+    // A single far-forward block is compensated by the blocks that follow it.
+    auto spike = BuildLWMAChain(61, 300);
+    spike[30].nTime += 1800;
+    arith_uint256 spike_target;
+    spike_target.SetCompact(CalculateNextWorkRequiredLWMA(&spike.back(), consensus));
+    BOOST_CHECK(spike_target <= honest_target * 101 / 100);
+}
+
 BOOST_AUTO_TEST_CASE(lwma_timestamp_clamps)
 {
     auto consensus = CreateChainParams(*m_node.args, CBaseChainParams::MAIN)->GetConsensus();

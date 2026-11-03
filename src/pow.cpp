@@ -28,11 +28,30 @@ unsigned int CalculateNextWorkRequiredLWMA(const CBlockIndex* pindexLast, const 
     int64_t weighted_solvetime = 0;
     arith_uint256 average_target;
     uint32_t target_remainder = 0;
-    const CBlockIndex* current = pindexLast;
 
-    for (int64_t weight = LWMA_AVERAGING_WINDOW; weight >= 1; --weight) {
-        assert(current != nullptr && current->pprev != nullptr);
-        const int64_t solvetime = std::clamp(current->GetBlockTime() - current->pprev->GetBlockTime(), int64_t{1}, max_solvetime);
+    // Collect the window oldest-first. window[0] is the block just before the
+    // averaging window and only provides the starting timestamp.
+    const CBlockIndex* window[LWMA_AVERAGING_WINDOW + 1];
+    const CBlockIndex* walk = pindexLast;
+    for (int64_t i = LWMA_AVERAGING_WINDOW; i >= 0; --i) {
+        assert(walk != nullptr);
+        window[i] = walk;
+        walk = walk->pprev;
+    }
+
+    // LWMA-1 timestamp handling: track the highest timestamp seen so far.
+    // A block whose timestamp is not above it counts as 1 second after it.
+    // This way a forward-dated timestamp is "paid back" by the following
+    // blocks instead of being lost to a per-block clamp, which would let
+    // miners lower difficulty by alternating future and past timestamps.
+    int64_t previous_timestamp = window[0]->GetBlockTime();
+
+    for (int64_t weight = 1; weight <= LWMA_AVERAGING_WINDOW; ++weight) {
+        const CBlockIndex* current = window[weight];
+        const int64_t block_time = current->GetBlockTime();
+        const int64_t this_timestamp = block_time > previous_timestamp ? block_time : previous_timestamp + 1;
+        const int64_t solvetime = std::min(this_timestamp - previous_timestamp, max_solvetime);
+        previous_timestamp = this_timestamp;
         weighted_solvetime += weight * solvetime;
 
         arith_uint256 target;
@@ -41,7 +60,6 @@ unsigned int CalculateNextWorkRequiredLWMA(const CBlockIndex* pindexLast, const 
         const arith_uint256 target_quotient = target / arith_uint256{static_cast<uint64_t>(LWMA_AVERAGING_WINDOW)};
         average_target += target_quotient;
         target_remainder += (target - target_quotient * static_cast<uint32_t>(LWMA_AVERAGING_WINDOW)).GetLow64();
-        current = current->pprev;
     }
     average_target += target_remainder / LWMA_AVERAGING_WINDOW;
 

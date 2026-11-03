@@ -88,7 +88,7 @@ public:
         consensus.nPowTargetSpacing = 5 * 60;
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.fPowNoRetargeting = false;
-        consensus.LWMAHeight = 60381; // Mainnet tip 58381 + 2000 blocks
+        consensus.LWMAHeight = 62000; // 25.2.1: moved from 60381 (tip 58574 on 2026-11-03)
         consensus.nRuleChangeActivationThreshold = 1815; // 90% of 2016
         consensus.nMinerConfirmationWindow = 2016; // ~1 week at 5min blocks (prevents accidental versionbit activation)
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;

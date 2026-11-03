@@ -65,7 +65,7 @@ static UniValue GetNetworkHashPS(int lookup, int height, const CChain& active_ch
     // If lookup is -1, then use blocks since last difficulty change.
     if (lookup <= 0) {
         if (pb->nHeight >= Params().GetConsensus().LWMAHeight) {
-            lookup = 1;
+            lookup = 120; // LWMA retargets every block; average over ~10h
         } else {
             lookup = pb->nHeight % Params().GetConsensus().DifficultyAdjustmentInterval() + 1;
         }
